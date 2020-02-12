@@ -1,0 +1,149 @@
+Lecture 6 HW
+================
+Tiffany Luong
+1/31/2020
+
+## Protein Drug Interactions Homework Using Bio3d
+
+``` r
+# Can you improve this analysis code?
+library(bio3d)
+s1 <- read.pdb("4AKE") # kinase with drug
+```
+
+    ##   Note: Accessing on-line PDB file
+
+``` r
+s2 <- read.pdb("1AKE") # kinase no drug
+```
+
+    ##   Note: Accessing on-line PDB file
+    ##    PDB has ALT records, taking A only, rm.alt=TRUE
+
+``` r
+s3 <- read.pdb("1E4Y") # kinase with drug
+```
+
+    ##   Note: Accessing on-line PDB file
+
+``` r
+s1.chainA <- trim.pdb(s1, chain="A", elety="CA")
+s2.chainA <- trim.pdb(s2, chain="A", elety="CA")
+s3.chainA <- trim.pdb(s1, chain="A", elety="CA")
+s1.b <- s1.chainA$atom$b
+s2.b <- s2.chainA$atom$b
+s3.b <- s3.chainA$atom$b
+plotb3(s1.b, sse=s1.chainA, typ="l", ylab="Bfactor")
+```
+
+![](lecture-6-HW_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
+
+``` r
+plotb3(s2.b, sse=s2.chainA, typ="l", ylab="Bfactor")
+```
+
+![](lecture-6-HW_files/figure-gfm/unnamed-chunk-1-2.png)<!-- -->
+
+``` r
+plotb3(s3.b, sse=s3.chainA, typ="l", ylab="Bfactor")
+```
+
+![](lecture-6-HW_files/figure-gfm/unnamed-chunk-1-3.png)<!-- -->
+
+Q1.
+
+read.pdb reads a Protein Data Bank PDB coordinate file.
+
+Q2.
+
+trim.pdb produces a smaller PDB object (a subset of smaller atoms) from
+a large PDB object
+
+Q3.
+
+The gray and black rectangles represent the alpha and beta helices.
+Change top and bot to FALSE to remove the rectangles.
+
+Q4. A better plot to compare the three proteins would be to plot all
+three of them on the same graph.
+
+``` r
+hc <- hclust( dist( rbind(s1.b, s2.b, s3.b) ) )
+plot(hc)
+```
+
+![](lecture-6-HW_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+
+Q5. According to the cluster dendrogram, s1.b and s3.b are proteins more
+similar to each other based on their B-factor trends.
+
+## Q6. Write a function that analyzes protein drug interactions by reading in any protein PDB data and outputs a plot for the specified protein.
+
+Submit as R markdown file and either an HTML or PDF with the code and
+output saved.
+
+# What are the inputs of the function?
+
+4 main sets of inputs: 1. read.pdb (read the protein pdb file) 2.
+trim.pdb (reduce the data to a smaller pdb file) 3. chain.pdb (find
+possible chain breaks based on the Calpha or peptide bond atom
+separation) 4.plot3b (make a graph of the protein drug interactions from
+PDB)
+
+Since these are the lines of code that get repeated, it’s best to divvy
+them up into a function.
+
+\#What does the function do? How do you use it? The function
+**pdi\_plot** should take a vector of the PDB files and the parameters
+to analyze each file (a chain, an element, and a factor). **pdi\_plot**
+will go through the vector and apply the parameters, then creates a
+single plot for easy visualization of the PDB data.
+
+To use the function, you can fill in the parameters for the vectors PDB
+files, chains, elements, and factors.
+
+# What is the output of the function?
+
+The output of the function should be a single graph with the three
+protein-drug-interactions plotted. The color is set to red, blue, and
+orange but can be customized.
+
+## HOMEWORK CODE
+
+``` r
+library(bio3d)
+
+#change variables to desired
+files <- "4AKE"
+chains <- "A"
+elem <- "CA"
+
+pdi_plot <- function(files) {
+  
+#input 1: read    
+    s <- read.pdb(files)
+
+#input 2: trim
+    s.chain <- trim.pdb(s, chain = chains, elety = elem)
+
+#input 3: chain.pdb on atom "b"
+    s.x <- s.chain$atom$b
+  
+#input 4: generate the plot
+      plotb3(s.x, sse = s.chain, typ = "l", ylab = "Bfactor", main = (files))
+
+}
+```
+
+## Final Output
+
+``` r
+pdi_plot(files)
+```
+
+    ##   Note: Accessing on-line PDB file
+
+    ## Warning in get.pdb(file, path = tempdir(), verbose = FALSE): C:
+    ## \Users\hitif\AppData\Local\Temp\Rtmpuw16hi/4AKE.pdb exists. Skipping download
+
+![](lecture-6-HW_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->

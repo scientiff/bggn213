@@ -2,7 +2,7 @@
 title: "Lecture 6 HW"
 author: "Tiffany Luong"
 date: "1/31/2020"
-output: html_document
+output: github_document
 ---
 
 ## Protein Drug Interactions Homework Using Bio3d
