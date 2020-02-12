@@ -2,7 +2,7 @@
 
 ## Editing on R
 
-This is my classwork from BGGN-213 at UC San Diego.
+This is my classwork from BGGN-213 W2020 at UC San Diego.
 
 This is a test of the README file in RStudio.
 
