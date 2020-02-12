@@ -2,11 +2,7 @@
 
 ## Editing on R
 
-This is my classwork from BGGN-213 at UC San Diego.
-
-This is a test of the README file in RStudio.
-
-Will we actually push this to the website?!
+This is my classwork from BGGN-213 Winter Quarter 2020 at UC San Diego.
 
 ## Editing on Git
 
