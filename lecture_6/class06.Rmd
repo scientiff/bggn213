@@ -1,0 +1,268 @@
+---
+title: 'Class 6: R functions'
+author: "Tiffany Luong"
+date: "1/24/2020"
+output:
+  html_document: default
+  pdf_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## This is a level 2 heading
+
+This is **regular** old *text*!
+
+and a list of stuff
+
+- thing one
+- thing two
+- and another thing
+
+
+```{r}
+plot(1:5, col="blue", type="o")
+```
+
+### Type ctrl+alt+i to shortcut add an "R Chunk":
+
+Let's insert a code chunk with the shortcut `CTRL-ALT-i`:
+
+```{r}
+x <- c(1:10)
+x
+```
+
+Here is my analysis of your new data. It looks ok... the mean of your data is `r mean(x)`.
+
+## More on reading input files
+
+We will use the read.table() function again,
+
+No good,
+```{r}
+read.table("test1.txt")
+```
+
+doesn't work,
+```{r}
+x <- read.table("test1.txt")
+```
+
+Test1: This does it!
+```{r}
+read.table("test1.txt", header = TRUE, sep =",")
+
+```
+
+Alternatively, read.csv to do this without argument.
+
+```{r}
+read.csv("test1.txt")
+```
+
+Test2: Here's another example.
+```{r}
+read.table("test2.txt", header = TRUE, sep = "$")
+```
+
+
+Finally, Test3:
+```{r}
+read.table("test3.txt", row.names = 1)
+```
+
+**int** stands for "integer". **fctr** stands for "factor".
+
+read.delim() is coded by read.table()
+read.table is the parent of all of them.
+
+(If you type in just read.delim you see the structure calls the read.table function and argues with it.)
+
+## Our first function
+
+This is an example function named `add` with input `x` and `y`:
+
+```{r}
+add <- function(x, y=1) {
+  #Sum the input x and y
+  x + y
+}
+```
+
+Let's try using it!
+
+```{r}
+add(x=c(1,6,2), y=4)
+```
+
+```{r}
+add(1,6)
+```
+
+
+
+## In class lab exercise:
+Section 1A
+```{r}
+# (A. Can you improve this analysis code?
+df <- data.frame(a=1:10, b=seq(200,400,length=10),c=11:20,d=NA)
+df$a <- (df$a - min(df$a)) / (max(df$a) - min(df$a))
+df$b <- (df$b - min(df$a)) / (max(df$b) - min(df$b))
+df$c <- (df$c - min(df$c)) / (max(df$c) - min(df$c))
+df$d <- (df$d - min(df$d)) / (max(df$a) - min(df$d))
+```
+
+Let's make this into the **rescale** function! (This will also make this more reusable in the future!)
+
+Let's reduce it down-- use a vector named x.
+
+
+```{r}
+#x <-(x- min(x) / max(x) - min(x))
+```
+
+Note how -min(x) is duplicated twice?
+```{r}
+#xmin <- min(x)
+
+#x <- (x - xmin)/max(x) - xmin
+```
+
+
+Or just use range!
+
+```{r}
+x<- c(10,4,22,6)
+min(x)
+max(x)
+range (x)
+```
+
+```{r}
+rng <- range(x)
+x <- (x - rng[1])/(rng[2] - rng[1])
+
+```
+
+Rescale the data to lie between 0 and 10:
+```{r}
+rescale <- function(x) {
+  rng <-range(x)
+  (x-rng[1])/(rng[2]-rng[1])
+}
+```
+
+Let's test it:
+
+```{r}
+rescale(c(1:10, 30, 100))
+```
+
+What if we break it?
+```{r}
+rescale(c(1:10, NA))
+```
+
+How do you troubleshoot? Start from the top:
+```{r}
+x<- c(1:10, NA)
+
+rng <- range(x, na.rm= TRUE)
+
+rng
+```
+
+There we go!
+
+```{r}
+rescale2 <- function(x) {
+  rng <-range(x, na.rm= TRUE)
+  (x-rng[1])/(rng[2]-rng[1])
+}
+```
+
+Now we repeat what broke it...
+
+```{r}
+rescale2(c(1:10, NA))
+```
+
+Now our code is more robust!
+
+```{r}
+rescale2(c(2, 3, NA, 6))
+```
+
+Let's make this more complicated:
+
+```{r}
+rescale3 <- function(x, na.rm=TRUE, plot=FALSE) {
+if(na.rm) {
+rng <-range(x, na.rm=na.rm)
+} else {
+rng <-range(x)
+}
+print("Hello")
+answer <- (x - rng[1]) / (rng[2] - rng[1])
+
+print("is it me you are looking for?")
+if(plot) {
+  print("Please don't sing again!")
+plot(answer, typ="b", lwd=4)
+}
+print("I can see it in ...")
+}
+```
+
+```{r}
+rescale3(x, plot= TRUE)
+```
+
+## Working with bio3d package
+
+To use the functions from any package installed, we use the `library()` to load it!
+
+```{r}
+library(bio3d)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+### This is a level 3 heading
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

@@ -1,0 +1,245 @@
+---
+title: "lecture_9"
+author: "Tiffany Luong"
+date: "2/5/2020"
+output: html_document
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+https://bioboot.github.io/bggn213_W20/class-material/lab-8-bggn213.html
+
+## K-means clustering
+
+Let's try the `kmeans()` function in R to cluster some made-up example data.
+
+```{r}
+# Generate some example data for clustering
+
+#30 points with a mean of -3. The second rnorm generates 30 points with a mean of +3.
+
+tmp <- c(rnorm(30,-3), rnorm(30,3))
+
+x <- cbind(x=tmp, y=rev(tmp))
+
+plot(x)
+
+```
+
+
+Use the kmeans() function settkming k to 2 and nstart = 20.
+
+```{r}
+km <- kmeans(x, centers = 2, nstart = 20)
+
+```
+
+Inspect/print the results
+
+```{r}
+km
+```
+
+What is in the output object `km`? I can use the `attributes()` function to find this info. :-)
+
+```{r}
+attributes(km)
+```
+
+Q. How many points are in each cluster?
+```{r}
+km$size
+```
+
+Q. What ‘component’ of your result object details
+- cluster size?
+see above.
+  
+- cluster assignment/membership?
+```{r}
+km$cluster
+```
+
+Let's check how many 2's and 1's are in this vector with the `table()` function.
+```{r}
+table(km$cluster)
+```
+
+- cluster center?
+```{r}
+km$centers
+```
+
+Plot x colored by the kmeans cluster assignment and add cluster centers as blue points.
+
+```{r}
+#c(rep("red", 30), rep("blue",30))
+
+plot(x, col=km$cluster)
+points(km$centers, col="blue", pch=16, cex=3)
+
+```
+
+
+
+
+
+
+
+## Hierarchical clustering in R
+
+The `hclust()` function is the main Hierarchical clustering method in R and it **must** be passed a *distance matrix* as input, not your raw data!
+
+```{r}
+hc <- hclust(dist(x))
+
+hc
+```
+
+```{r}
+plot(hc)
+```
+
+```{r}
+plot(hc)
+abline(h=6, col="red", lty=2)
+abline(h=3.5, col="blue", lty=2)
+```
+
+```{r}
+cutree(hc, h=6)
+```
+
+```{r}
+table(cutree(hc, h=3.5))
+```
+
+You can also ask `cutree()` for the `k` number of groups that you want.
+
+```{r}
+cutree(hc, k=5)
+```
+
+
+
+
+## Data clustering.
+
+
+Step 1. Generate some example data for clustering
+
+```{r}
+x <- rbind(
+matrix(rnorm(100, mean=0, sd=0.3), ncol = 2), # c1
+matrix(rnorm(100, mean=1, sd=0.3), ncol = 2), # c2
+matrix(c(rnorm(50, mean=1, sd=0.3), # c3
+rnorm(50, mean=0, sd=0.3)), ncol = 2))
+colnames(x) <- c("x", "y")
+
+```
+
+
+Step 2. Plot the data without clustering
+```{r}
+plot(x)
+```
+
+Step 3. Generate colors for known clusters
+```{r}
+# (just so we can compare to hclust results)
+col <- as.factor( rep(c("c1","c2","c3"), each=50) )
+plot(x, col=col)
+```
+
+Your Turn!
+Q. Use the dist(), hclust(), plot() and cutree() functions to return 2 and 3 clusters
+
+```{r}
+hc <- hclust(dist(x))
+
+plot(hc)
+```
+
+```{r}
+grps3 <- cutree(hc, k=3)
+
+grps3
+```
+
+```{r}
+table(grps3)
+```
+
+Q. How does this compare to your known 'col' groups?
+```{r}
+plot(x, col=grps3)
+```
+
+
+We can use a cross table to look at the data we just generated. Cluster from k=3 compared to the original data "col". Think of it as looking at "true positives" vs. "false positives".
+
+```{r}
+table(grps3, col)
+```
+
+
+
+
+
+
+## Principal Component Analysis (PCA)
+
+Thr main function in R for PCA is called `prcomp()`. Here we will use PCA to examine the funny food that folks eat in the UK and N. Ireland.
+
+Import the CSV file first:
+
+```{r}
+x <- read.csv("UK_foods.csv", row.names = 1)
+
+x
+```
+
+You can visualize differences like so:
+Changing beside to "F" can make it a stacked graph instead.
+```{r}
+barplot(as.matrix(x), beside=T, col=rainbow(nrow(x)))
+
+```
+
+
+
+```{r}
+pairs(x, col=rainbow(10), pch=16)
+```
+
+# PCA to the rescue!
+
+```{r}
+pca <- prcomp(t(x))
+summary(pca)
+```
+
+Think of PCA as a filter for your data! Now figure out how to plot it:
+
+```{r}
+attributes(pca)
+```
+
+
+```{r}
+
+# Plot PC1 vs PC2
+plot(pca$x[,1], pca$x[,2], xlab="PC1", ylab="PC2", xlim=c(-270,500))
+text(pca$x[,1], pca$x[,2], colnames(x), col=c("black", "red", "blue", "darkgreen"))
+
+```
+
+```{r}
+
+## Lets focus on PC1 as it accounts for > 90% of variance 
+par(mar=c(10, 3, 0.35, 0))
+barplot( pca$rotation[,1], las=2 )
+
+```
+

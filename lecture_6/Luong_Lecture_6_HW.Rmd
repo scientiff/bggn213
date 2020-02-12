@@ -1,0 +1,70 @@
+---
+title: "Lecture 6 HW"
+author: "Tiffany Luong"
+date: "1/31/2020"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+# Protein Drug Interactions Homework Using Bio3d
+
+## Q6. Write a function that analyzes protein drug interactions by reading in any protein PDB data and outputs a plot for the specified protein.
+
+Submit as R markdown file and either an HTML or PDF with the code and output saved.
+
+### What are the inputs of the function?
+4 main sets of inputs:
+1. read.pdb (read the protein pdb file)
+2. trim.pdb (reduce the data to a smaller pdb file)
+3. chain.pdb (find possible chain breaks based on the Calpha or peptide bond atom separation)
+4. plot3b (make a graph of the protein drug interactions from PDB)
+
+Since these are the lines of code that get repeated, it's best to divvy them up into a function.
+
+### What does the function do? How do you use it?
+The function **pdi_plot** should generate a plot for the given parameters to analyze a PDB file (a chain, an element, and a specified atom).
+
+To use the function, you can fill in the parameters for the vectors PDB file, chain, and element.
+
+### What is the output of the function?
+The output is a graph labeled with the file name.
+
+## HOMEWORK CODE
+
+```{r}
+
+library(bio3d)
+
+#change variables to desired
+files <- "4AKE"
+chains <- "A"
+elem <- "CA"
+
+pdi_plot <- function(files) {
+  
+#input 1: read    
+    s <- read.pdb(files)
+
+#input 2: trim
+    s.chain <- trim.pdb(s, chain = chains, elety = elem)
+
+#input 3: chain.pdb on atom "b"
+    s.x <- s.chain$atom$b
+  
+#input 4: generate the plot
+      plotb3(s.x, sse = s.chain, typ = "l", ylab = "Bfactor", main = (files))
+
+}
+
+```
+
+
+## Final Output
+
+```{r}
+
+pdi_plot(files)
+
+```
+
