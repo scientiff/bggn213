@@ -2,9 +2,8 @@
 title: 'Class 10: Machine Learning Project'
 author: "Tiffany Luong"
 date: "2/7/2020"
-output:
-  pdf_document: default
-  html_document: default
+output: github_document
+
 ---
 
 ```{r setup, include=FALSE}
