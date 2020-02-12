@@ -1,6 +1,9 @@
-# bggn213
+# BGGN-213
 
 ## Editing on R
+
+This is my classwork from BGGN-213 at UCSD.
+
 This is a test of the README file in RStudio.
 
 Will we actually push this to the website?!
