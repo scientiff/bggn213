@@ -7,4 +7,222 @@ output: github_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+## Don't forget the GitHub workflow!
+> ADD the file to the stage.
+> COMMIT the file.
+> PUSH the file to GitHub.
+
 ## PDB Statistics
+
+Download a CSV file from the PDB site (accessible from "Analyze" > "PDB Statistics" > "by Experimental Method and Molecular Type"). Move this CSV file into your RStudio project and use it to answer the following questions.
+
+> Q1. What percentage of structures in the PDB are solved by X-Ray and Electron microscope?
+
+```{r}
+stats <- read.csv("Data_Export_Summary.csv", row.names = 1)
+
+print(stats)
+```
+
+```{r}
+
+sum(stats$Total)
+```
+
+```{r}
+ans1 <- round(stats$Total/sum(stats$Total)*100, 2)
+
+names(ans1) <- rownames(stats)
+
+ans1
+
+```
+
+> Q2. What proportion of sturctures in the PDB are protein?
+
+
+```{r}
+ans2 <- round(sum(stats$Proteins)/sum(stats$Total)*100, 2)
+
+ans2
+```
+
+> Q3. Q: Type HIV in the PDB website search box on the home page and determine how many HIV-1 protease structures are in the current PDB?
+1282! That's a lot...
+
+## 2. USing bio3d to analyze protein structure data
+
+Use the bio3d package from CRAN. We should already have this downloaded from the previous homework.
+
+```{r}
+library(bio3d)
+
+pdb <- read.pdb("1hsg")
+
+pdb
+
+```
+
+> Q: How many amino acid residues are there in this pdb object?
+198
+
+> Q: Name one of the two non-protein residues? 
+MK1
+
+> Q: How many protein chains are in this structure? 
+2 (A and B)
+
+You can access this information from `attributes(pdb)`.
+
+## Comparative structure analysis of Adenylate Kinase
+On PDB it's 1AKE.
+
+Installing packages: Make sure that you run the install in the R console and not the R markdown document to avoid trying to install packages (and wasting your time!) every single time you knit.
+The packages we install:
+"bio3d" "ggplot2" "ggrepel" "devtools" "BiocManager"
+As part of the BioConductor repository, "BiocManager::install("msa")" "devtools::install_bitbucket("Grantlab/bio3d-view")".
+
+These packages will be useful for looking at biomolecular data.
+
+You could also (if desired) go through GitHub: `devtools::instal_github()`
+
+> 1. Search and retrieve ADK structures.
+
+```{r}
+library(bio3d)
+
+aa <- get.seq("1ake_A")
+```
+
+```{r}
+aa
+```
+
+> Q. How many amino acids are in this sequence, i.e. how long is this sequence?
+214
+
+Now we can use this sequence to do a BLAST search on the PDB to find a similiar sequence and structure.
+
+```{r}
+#Blast or hmmer search.
+b <- blast.pdb(aa)
+```
+
+Visualize this:
+```{r}
+#Plot a summary of search results
+hits <- plot(b)
+```
+
+
+This is horrible to look at. Let's visualize and filter them through `plot.blast()`. Let's make top scoring hits in black.
+
+```{r}
+#List out some 'top hits'
+head(hits$pdb.id, 16)
+```
+
+Great! We see 1AKE_A there (our target query) for a total of 16 hits.
+
+```{r}
+hits <- NULL
+hits$pdb.id <- c("1AKE_A", "4X8M_A", "6S36_A", "6RZE_A", "4X8H_A", "3HPR_A", "1E4V_A", "5EJE_A", "1E4Y_A", "3X2S_A", "6HAP_A", "6HAM_A", "4K46_A", "4NP6_A", "3GMT_A", "4PZL_A")
+```
+
+
+```{r}
+hits$pdb.id
+```
+
+Download and parse the structures:
+
+```{r}
+#Download related PDB files
+files <- get.pdb(hits$pdb.id, path="pdbs", split=TRUE, gzip=TRUE)
+```
+
+Now that we have the structures, we can use `pdbaln()` function to align and optimally fit (superpose) the identified PDB structures.
+
+```{r}
+#Align related PDBs, we will only take "A" from each file!
+pdbs <- pdbaln(files, fit = TRUE, exefile = "msa")
+```
+
+Now let's label and draw the schematic for how we want to label and plot the structures.
+
+```{r}
+#Vector containing PDB codes for the figure axis.
+ids <- basename.pdb(pdbs$id)
+
+#Draw the schematic alignment
+plot(pdbs, labels=ids)
+```
+Figure 2: The grey regions are aligned residues, while white depicts gap regions. The red bar depicts sequence conservation.
+
+Note!!! If you get the error message "Error in plot.new() : figure margins too large." that means your R Studio window is too small... Simply resize your window and run the plot again. :) Yay!
+
+## View the superposed structures!
+
+We can use the new `bio3d.view()` function:
+
+*Don't know why `rgl` was missing, but install it!
+
+```{r}
+library(bio3d.view)
+library(rgl)
+
+view(pdbs)
+```
+Figure 3: 3D view of superposed ADK structures from PDB.
+
+Finally, we can annotate this.
+
+The function `pdb.annotate()` to annotate the PDB files we have collected. Here we will annotate each structure to its source species. This will be helpful for plots later on.
+
+```{r}
+anno <- pdb.annotate(ids)
+
+unique(anno$source)
+```
+
+## Principal component analysis
+
+The function `pca()` provides a PCA of the structure data. This is a statistical approach used to transform a data set down to a few important components that describes the directions where there is most variance. In terms of protein structures PCA is used to capture the major structural variations within an ensemble of structures!
+
+```{r}
+pc <- pca(pdbs)
+plot(pc)
+```
+Figure 4: Results of PCA on Adenylate kinase X-ray structures. Each dot is a single PDB structure.
+
+> THE IMPORTANT TAKEAWAY: Look at how much we've reduced the 612 original variables (PC1-612!) down to just PC1 that explains 84.4% of the variance! The more PCs we look at, the less those plots explain the variances between the data set.
+
+Now that we have this super easy to visualize data (haha no I'm so confused), the function `rmsd()` will calculate all the pairwise RMSD values of the structural ensemble. This facilitates clustering analysis based on the pairwise structural deviation:
+
+```{r}
+#Calculate RMSD
+rd <- rmsd(pdbs)
+
+#Structure-based clustering
+hc.rd <- hclust(dist(rd))
+grps.rd <- cutree(hc.rd, k=3)
+
+plot(pc, 1:2, col="grey50", bg=grps.rd, pch=21, cex=1)
+```
+Figure 5: Projection of Adenylate kinase X-ray structures. Each dot is a PDB structure.
+
+The plot shows a conformer plot – a low-dimensional representation of the conformational variability within the ensemble of PDB structures. The plot is obtained by projecting the individual structures onto two selected PCs (e.g. PC-1 and PC-2). These projections display the inter-conformer relationship in terms of the conformational differences described by the selected PCs.
+
+Make a PCA trajectory.
+
+To visualize the major structural variations in the ensemble the function `mktrj()` (make trajectory) can be used to generate a trajectory PDB file by interpolating along a give PC (eigenvector):
+
+```{r}
+#Visualize the first principal component
+pc1 <- mktrj(pc, pc=1, file="pc_1.pdb")
+```
+
+```{r}
+view(pc1)
+```
+Figure 6: Visualization of PC-1 trajectory.
