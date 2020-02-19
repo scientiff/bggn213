@@ -77,6 +77,7 @@ write.pdb(result, "results.pdb")
 ```
 
 We can now view the docking as a movie on PyMOL.
+You can overlay your results with the original to see what optimal docking (#1) looks like. Turn on the "surface" option of the 1HSG molecule in order to see where interactions occur. (ex: In this model, the result is able to nest within the water molecules.)
 
 # Quantify the RMSD value of the results.
 
