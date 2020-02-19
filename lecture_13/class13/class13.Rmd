@@ -1,0 +1,101 @@
+---
+title: "Structure based drug design"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Download and process starting structure.
+
+Here, we download and clean up the HIV-Pr sturcture. PDB Code: 1HSG from the main PDB database. We will make a show "protein only" and "ligand only" PDB files.
+
+```{r}
+library(bio3d)
+
+file.name <- get.pdb("1HSG")
+```
+
+We will use `read.pdb()`, `atom.select()`, and `write.pdb()` functions to make our separate "protein-only" and "ligand-only" PDB files.
+
+You "got" the PDB file, now you have to read it to see its contents.
+```{r}
+
+hiv <- read.pdb(file.name)
+
+hiv
+
+```
+
+# Prepare the initial protein and ligand input files for AutoDock.
+
+Next, to select the atom look up `?atom.select` then use the correct inputs.
+```{r}
+
+prot <- atom.select(hiv, "protein", value = TRUE)
+lig <- atom.select(hiv, "ligand", value = TRUE)
+
+prot
+lig
+
+```
+
+Now that you've put together the file, write it so you can save "1HSG_prot" and "1HSG_lig" as PDB files.
+```{r}
+
+write.pdb(prot, file="1hsg_protein.pdb")
+write.pdb(lig, file="1hsg_ligand.pdb")
+
+```
+
+Now, switch to the AutoDock program to open those PDB files.
+Change the formats to PDBQT files.
+The PDBQT file gives you the atom charge + atom type. 
+Now, make a config.txt file with the relevant arguments to specify your files and inputs for the program.
+
+>> Note that we skipped the "prepare the ligand" step during class due to time constraints.
+
+# Prepare a docking configuation file.
+
+Install AutoDock Tools Vina.
+Run Vina using the Terminal.
+You have to identify WHERE your program is and argue with it. (That's why we made a config. .txt file.)
+
+# Dock the ligand onto the HIV-1 protease.
+INPUT > "\Program Files (x86)\The Scripps Research Institute\Vina\vina.exe" --config config.txt --log log.txt
+
+Once the run is complete, you should have two new files all.pdbqt, which contains all the docked modes, and log.txt, which contains a table of calculated affinities based on AutoDock Vina's scoring function. The best docked mode, according to AutoDock Vina, is the first entry in all.pdbqt.
+
+# Read docking results.
+
+Now let's inspect what we just made,
+```{r}
+result <- read.pdb("all.pdbqt", multi=TRUE)
+
+write.pdb(result, "results.pdb")
+```
+
+We can now view the docking as a movie on PyMOL.
+
+# Quantify the RMSD value of the results.
+
+We can use R to quantify the results by calculating RMSD (root mean square distance) between each docking result and comparing it to bio3d crystal structures.
+
+```{r}
+
+num_res <- read.pdb("all.pdbqt", multi = TRUE)
+num_res
+```
+
+```{r}
+ori <- read.pdb("ligand.pdbqt")
+ori
+```
+
+```{r}
+
+rmsd(ori, num_res)
+
+```
+
