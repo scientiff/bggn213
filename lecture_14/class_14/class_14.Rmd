@@ -1,0 +1,237 @@
+---
+title: "Transcriptomics and the analysis of RNA-Seq data"
+output: github_document
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# 1. Read the data for today and start analyzing it.
+
+```{r}
+
+counts <- read.csv("airway_scaledcounts.csv", stringsAsFactors = FALSE)
+metadata <- read.csv("airway_metadata.csv", stringsAsFactors = FALSE)
+
+```
+
+`stringsAsFactors = FALSE` makes it so that your data doesn't become factors. (The gene names!) That's only useful for categorical data, not ours.
+
+```{r}
+
+head(counts)
+head(metadata)
+
+```
+
+How many genes are we dealing with?
+
+```{r}
+nrow(counts)
+```
+
+We will compare the control vs. treated count data contained in `counts` object. We will first extract the control columns by looking up their "colnames" in the `metadata` object.
+
+Use `==` to compare objects. It returns TRUE or FALSE.
+To print ONLY the TRUE statements, use brackets.
+Use [item,] the comma second means you're calling the ROW.
+
+```{r}
+#metadata$dex
+#metadata$dex == "control"
+
+# Use this to create a robust way of accessing the control column of this data and assigning the ID's to it.
+control <- metadata[metadata$dex =="control",]
+
+control
+
+```
+
+Used [,item] the comma first means you're calling the COLUMN.
+
+```{r}
+# Access the count columns with control$id.
+counts[,control$id]
+```
+
+```{r}
+# Calculate the mean value for each gene (i.e. each row).
+control.mean <- rowMeans(counts[,control$id])
+
+control.mean
+```
+
+```{r}
+# Here's the hard way!
+
+control.mean2 <- rowSums(counts[,control$id])/nrow(control)
+control.mean2
+```
+
+Now let's make a set of data for "treated" data.
+
+```{r}
+treated <- metadata[metadata$dex =="treated",]
+treated
+```
+
+```{r}
+counts[,treated$id]
+```
+
+```{r}
+treated.mean <- rowMeans(counts[,treated$id])
+
+treated.mean
+```
+
+Setup the names:
+```{r}
+names(control.mean) <- counts$ensgene
+names(treated.mean) <- counts$ensgene
+```
+
+
+Combine this data for bookkeeping purposes!
+```{r}
+meancounts <- data.frame(control.mean, treated.mean)
+```
+
+Check your data using `colSums()` to show the sum of the mean counts across all genes for each group:
+
+```{r}
+colSums(meancounts)
+```
+
+Let's visualize our data:
+
+Since our data is very skewed (used the histogram to check), use log to visualize the data.
+
+```{r}
+plot.default(meancounts[,1], meancounts[,2], main="Control vs. Treated", ylab = "Treated", xlab = "Control", log = "xy", col = c("blue", "red"))
+```
+
+Let's remove our zero count genes because we can't say anything about them from this data set!
+
+Example:
+```{r}
+x <- data.frame( c(1, 3, 10, 0),
+                 c(1, 3, 0, 0) )
+
+x
+
+# "Which" tells you where your answers' location are.
+#which(x ==0)
+
+# Let's idetify the row and column though.
+unique(which(x == 0, arr.ind = TRUE)[,"row"])
+
+# Use unique to find where only 1 unique 0 value occurs.
+
+```
+
+Let's find zero rows in our `meancounts` object.
+
+```{r}
+to.rm <- unique(which(meancounts == 0, arr.ind = TRUE)[,"row"])
+
+# Add a minus - to get data minus that group.
+mycounts <- meancounts[-to.rm,]
+nrow(mycounts)
+
+```
+
+Here we will calculate the log2foldchange, add it to our meancounts data.frame, and inspect the results either with the `head()` or `View()` function for example.
+
+```{r}
+
+mycounts$log2fc <- log2(mycounts[,"treated.mean"]/mycounts[,"control.mean"])
+
+head(mycounts$log2fc)
+
+```
+
+A common rule of thumb in the field is to use a log2fc of greater than +2 as *upregulated* and log2fc of less than -2 as *down regulated*.
+
+How many of our genes are up regulated during drug treatment using the threshold we assigned?
+```{r}
+up.ind <- mycounts$log2fc > 2
+down.ind <- mycounts$log2fc < (-2)
+
+# Upregulated.
+sum(up.ind)
+
+# Downregulated.
+sum(down.ind)
+```
+
+# 2. Let's use DESeq2!
+
+```{r}
+
+library(DESeq2)
+citation("DESeq2")
+
+```
+
+Format your data so that DESeq2 will take it:
+
+```{r}
+dds <- DESeqDataSetFromMatrix(countData=counts, 
+                              colData=metadata, 
+                              design=~dex, 
+                              tidy=TRUE)
+dds
+```
+
+Now let's act like you didn't need to manually process the data for the last 2 hours and just shove it into DESeq2!
+
+```{r}
+dds <- DESeq(dds)
+```
+
+```{r}
+res <- results(dds)
+
+head(res)
+```
+
+This is hard to look at. Let's summarize the basic tallies using the summary function!
+
+```{r}
+summary(res)
+```
+
+## Volcano plots.
+
+Plot of log2fc versus p value.
+
+```{r}
+plot(res$log2FoldChange, -log(res$padj), col = "gray")
+abline(v=c(-2, +2), lty = 2)
+abline(h=-log(0.05), lty = 2)
+
+```
+
+Here's just the copy + paste of the nice graph!
+
+```{r}
+# Setup our custom point color vector 
+mycols <- rep("gray", nrow(res))
+mycols[ abs(res$log2FoldChange) > 2 ]  <- "red" 
+
+inds <- (res$padj < 0.01) & (abs(res$log2FoldChange) > 2 )
+mycols[ inds ] <- "blue"
+
+# Volcano plot with custom colors 
+plot( res$log2FoldChange,  -log(res$padj), 
+ col=mycols, ylab="-Log(P-value)", xlab="Log2(FoldChange)" )
+
+# Cut-off lines
+abline(v=c(-2,2), col="gray", lty=2)
+abline(h=-log(0.1), col="gray", lty=2)
+
+```
+
+
