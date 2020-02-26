@@ -1,0 +1,75 @@
+---
+title: "GALAXY and RNA-Seq Analysis"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# GALAXY
+
+Mostly refer to the in-class lab worksheet for the GALAXY portion of this class.
+
+>> Workflow: FASTQ -> Quality Control (FASTQC) -> MAPPING (Tophat) -> COUNT (Cufflinks)
+
+# Genotype Analysis
+
+We downloaded this genotype information from ENSMBL.
+
+```{r}
+mxl <- read.csv("373531-SampleGenotypes-Homo_sapiens_Variation_Sample_rs8067378.csv")
+
+head(mxl)
+```
+
+We want to look at the column that contains the genotype information.
+
+```{r}
+
+table(mxl$Genotype..forward.strand.)
+
+
+```
+
+## RNA-Seq result analysis for different genotypes of this SNP
+
+```{r}
+
+expr <- read.table("rs8067378_ENSG00000172057.6.txt")
+
+head(expr)
+
+```
+
+Does the expression change with the phenotype?
+
+Compile the data so that you only see the individual genotypes (A/A, A/G, G/G).
+
+```{r}
+
+summary(expr[expr$geno == "A/A",]$exp)
+summary(expr[expr$geno == "A/G",]$exp)
+summary(expr[expr$geno == "G/G",]$exp)
+
+```
+
+```{r}
+hist(expr[expr$geno == "A/A",]$exp)
+hist(expr[expr$geno == "A/G",]$exp)
+hist(expr[expr$geno == "G/G",]$exp)
+```
+
+## Try a boxplot!
+
+We will use a `boxplot` function and the input data will be **expr**. How do we draw a useful plot?
+
+`notch` is a very useful boxplot argument that will help you determine whether your data has any significance!
+
+```{r}
+
+boxplot(exp ~ geno, data=expr, notch = TRUE)
+
+boxplot(expr[expr$geno == "A/A",]$exp, expr[expr$geno == "A/G",]$exp, expr[expr$geno == "G/G",]$exp, ylab = "normalized expression", xlab = "genotype", notch = TRUE)
+
+```
