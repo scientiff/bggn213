@@ -44,7 +44,7 @@ Use [item,] the comma second means you're calling the ROW.
 # Use this to create a robust way of accessing the control column of this data and assigning the ID's to it.
 control <- metadata[metadata$dex =="control",]
 
-control
+head(control)
 
 ```
 
@@ -52,38 +52,39 @@ Used [,item] the comma first means you're calling the COLUMN.
 
 ```{r}
 # Access the count columns with control$id.
-counts[,control$id]
+head(counts[,control$id])
 ```
 
 ```{r}
 # Calculate the mean value for each gene (i.e. each row).
 control.mean <- rowMeans(counts[,control$id])
 
-control.mean
+head(control.mean)
 ```
 
 ```{r}
 # Here's the hard way!
 
 control.mean2 <- rowSums(counts[,control$id])/nrow(control)
-control.mean2
+
+head(control.mean2)
 ```
 
 Now let's make a set of data for "treated" data.
 
 ```{r}
 treated <- metadata[metadata$dex =="treated",]
-treated
+head(treated)
 ```
 
 ```{r}
-counts[,treated$id]
+head(counts[,treated$id])
 ```
 
 ```{r}
 treated.mean <- rowMeans(counts[,treated$id])
 
-treated.mean
+head(treated.mean)
 ```
 
 Setup the names:
@@ -168,7 +169,7 @@ sum(down.ind)
 
 # 2. Let's use DESeq2!
 
-```{r}
+```{r include=FALSE}
 
 library(DESeq2)
 citation("DESeq2")
