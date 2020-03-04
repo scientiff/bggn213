@@ -1,0 +1,203 @@
+---
+title: "BGGN213: Coronavirus Analysis (Homework)"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Coronavirus
+
+Here we analyze infection data for the 2019 novel Coronavirus COVID-19 (2019-nCoV) epidemic. The raw data is pulled from the Johns Hopkins University Center for Systems Science and Engineering (JHU CCSE) Coronavirus repository.
+
+A CSV file is available here https://github.com/RamiKrispin/coronavirus-csv
+
+
+```{r}
+url <- "https://tinyurl.com/COVID-2019"
+virus <- read.csv(url)
+
+tail(virus)
+```
+
+```{r include=FALSE}
+attributes(virus)
+```
+
+
+> Q1. How many total infected cases are there around the world?
+
+```{r}
+total <- sum(virus$cases)
+total
+```
+
+>> There are 144,233 cases worldwide.
+
+> Q2. How many deaths linked to infected cases have there been?
+
+```{r}
+table(virus$type)
+```
+
+```{r}
+inds <- virus$type == "death"
+
+head(virus[inds,])
+
+deaths <- sum(virus[inds,]$cases)
+
+deaths
+```
+
+>> There are 3,160 deaths linked to the infected cases.
+
+> Q3. What is the overall death rate?
+
+
+```{r}
+death_rate<- round((deaths/total)*100, 2)
+
+death_rate
+```
+
+>> The overall death rate is 2.19%.
+
+> Q4. What is the death rate in Mainland China?
+
+```{r}
+
+#First, calculate the total number of cases in Mainland China.
+
+chinese_cases <- virus$Country.Region == "Mainland China"
+  
+chinese_total <- sum(virus[chinese_cases,]$cases)
+
+chinese_total
+
+#Next, specify that we're looking for deaths in "Mainland China".
+
+chinese_inds <- virus$type == "death" & virus$Country.Region == "Mainland China"
+
+head(virus[chinese_inds,])
+
+chinese_deaths <- sum(virus[chinese_inds,]$cases)
+
+chinese_deaths
+
+#Finally, calculate death rate by dividing deaths/total in "Mainland China".
+
+chinese_death_rate <- round((chinese_deaths/chinese_total)*100, 2)
+
+chinese_death_rate
+
+```
+
+>> The death rate in Mainland China is 2.26%
+
+> Q5. What is the death rate in Italy, Iran, and the US?
+
+Italy
+```{r}
+
+#First, calculate the total number of cases in Italy.
+
+italian_cases <- virus$Country.Region == "Italy"
+  
+italian_total <- sum(virus[italian_cases,]$cases)
+
+italian_total
+
+#Next, specify that we're looking for deaths in "Italy".
+
+italian_inds <- virus$type == "death" & virus$Country.Region == "Italy"
+
+head(virus[italian_inds,])
+
+italian_deaths <- sum(virus[italian_inds,]$cases)
+
+italian_deaths
+
+#Finally, calculate death rate by dividing deaths/total in "Italy".
+
+italian_death_rate <- round((italian_deaths/italian_total)*100, 2)
+
+italian_death_rate
+
+```
+
+>> The death rate in Italy is 2.88%.
+
+Iran
+
+```{r}
+
+#First, calculate the total number of cases in Iran.
+
+iranian_cases <- virus$Country.Region == "Iran"
+  
+iranian_total <- sum(virus[iranian_cases,]$cases)
+
+iranian_total
+
+#Next, specify that we're looking for deaths in "Iran".
+
+iranian_inds <- virus$type == "death" & virus$Country.Region == "Iran"
+
+head(virus[iranian_inds,])
+
+iranian_deaths <- sum(virus[iranian_inds,]$cases)
+
+iranian_deaths
+
+#Finally, calculate death rate by dividing deaths/total in "Iran".
+
+iranian_death_rate <- round((iranian_deaths/iranian_total)*100, 2)
+
+iranian_death_rate
+
+```
+
+>> The death rate in Iran is 2.85%.
+
+United States (US)
+
+```{r}
+
+#First, calculate the total number of cases in the "US".
+
+american_cases <- virus$Country.Region == "US"
+  
+american_total <- sum(virus[american_cases,]$cases)
+
+american_total
+
+#Next, specify that we're looking for deaths in "US".
+
+american_inds <- virus$type == "death" & virus$Country.Region == "US"
+
+head(virus[american_inds,])
+
+american_deaths <- sum(virus[american_inds,]$cases)
+
+american_deaths
+
+#Finally, calculate death rate by dividing deaths/total in "US".
+
+american_death_rate <- round((american_deaths/american_total)*100, 2)
+
+american_death_rate
+
+```
+
+>> The death rate in the US is 5.11%.
+
+# Don't forget to wash your hands!!!
+
+```{r echo=FALSE}
+knitr::include_graphics("clean_hands.gif")
+```
+
+
+Submit a link to your knited GitHub document (i.e. the .md file)
