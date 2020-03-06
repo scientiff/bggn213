@@ -27,7 +27,7 @@ library(RColorBrewer)
 
 Can we talk to Cytoscape from R?
 
-```{r}
+```{r echo=TRUE}
 library(RCy3)
 
 # Test the connection to Cytoscape.
