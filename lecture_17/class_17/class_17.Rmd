@@ -33,7 +33,8 @@ total <- sum(virus$cases)
 total
 ```
 
->> There are 144,233 cases worldwide.
+>> There are 144,233 cases worldwide. (3/4/2020)
+>> Now there are 155,031 cases! (3/6/2020)
 
 > Q2. How many deaths linked to infected cases have there been?
 
@@ -51,7 +52,8 @@ deaths <- sum(virus[inds,]$cases)
 deaths
 ```
 
->> There are 3,160 deaths linked to the infected cases.
+>> There are 3,160 deaths linked to the infected cases. (3/4/2020)
+>> Now there are 3,348. :( (3/6/2020)
 
 > Q3. What is the overall death rate?
 
@@ -62,7 +64,8 @@ death_rate<- round((deaths/total)*100, 2)
 death_rate
 ```
 
->> The overall death rate is 2.19%.
+>> The overall death rate is 2.19%. (3/4/2020)
+>> It's dropped! 2.16% (3/6/2020)
 
 > Q4. What is the death rate in Mainland China?
 
@@ -94,7 +97,8 @@ chinese_death_rate
 
 ```
 
->> The death rate in Mainland China is 2.26%
+>> The death rate in Mainland China is 2.26% (3/4/2020).
+>> Now it's 2.22% (3/6/2020).
 
 > Q5. What is the death rate in Italy, Iran, and the US?
 
@@ -127,7 +131,9 @@ italian_death_rate
 
 ```
 
->> The death rate in Italy is 2.88%.
+>> The death rate in Italy is 2.88%.(3/4/2020)
+>> New death rate of 3.35%. (3/6/2020)
+
 
 Iran
 
@@ -159,7 +165,8 @@ iranian_death_rate
 
 ```
 
->> The death rate in Iran is 2.85%.
+>> The death rate in Iran is 2.85%. (3/4/2020)
+>> New rate, 2.45%. (3/6/2020)
 
 United States (US)
 
@@ -191,7 +198,8 @@ american_death_rate
 
 ```
 
->> The death rate in the US is 5.11%.
+>> The death rate in the US is 5.11%. (3/4/2020)
+>> Now only 4.98%! (3/6/2020)
 
 # Don't forget to wash your hands!!!
 
