@@ -18,13 +18,13 @@ virus <- read.csv(url)
 tail(virus)
 ```
 
-    ##      Province.State Country.Region     Lat     Long       date cases      type
-    ## 2772        Shaanxi Mainland China 35.1917 108.8701 2020-03-04     7 recovered
-    ## 2773       Shandong Mainland China 36.3427 118.1498 2020-03-04     5 recovered
-    ## 2774       Shanghai Mainland China 31.2020 121.4491 2020-03-04     4 recovered
-    ## 2775        Sichuan Mainland China 30.6171 102.7103 2020-03-04    12 recovered
-    ## 2776       Xinjiang Mainland China 41.1129  85.2401 2020-03-04     1 recovered
-    ## 2777       Zhejiang Mainland China 29.1832 120.0934 2020-03-04    21 recovered
+    ##      Province.State Country.Region      Lat     Long       date cases      type
+    ## 2881         Shanxi Mainland China  37.5777 112.2922 2020-03-05     2 recovered
+    ## 2882        Sichuan Mainland China  30.6171 102.7103 2020-03-05    19 recovered
+    ## 2883        Tianjin Mainland China  39.3054 117.3230 2020-03-05     4 recovered
+    ## 2884       Victoria      Australia -37.8136 144.9631 2020-03-05     3 recovered
+    ## 2885       Xinjiang Mainland China  41.1129  85.2401 2020-03-05     1 recovered
+    ## 2886       Zhejiang Mainland China  29.1832 120.0934 2020-03-05    10 recovered
 
 > Q1. How many total infected cases are there around the world?
 
@@ -33,9 +33,10 @@ total <- sum(virus$cases)
 total
 ```
 
-    ## [1] 149549
+    ## [1] 155031
 
-> > There are 144,233 cases worldwide.
+> > There are 144,233 cases worldwide. (3/4/2020) Now there are 155,031
+> > cases\! (3/6/2020)
 
 > Q2. How many deaths linked to infected cases have there been?
 
@@ -45,7 +46,7 @@ table(virus$type)
 
     ## 
     ## confirmed     death recovered 
-    ##      1520       203      1054
+    ##      1593       212      1081
 
 ``` r
 inds <- virus$type == "death"
@@ -67,9 +68,10 @@ deaths <- sum(virus[inds,]$cases)
 deaths
 ```
 
-    ## [1] 3254
+    ## [1] 3348
 
-> > There are 3,160 deaths linked to the infected cases.
+> > There are 3,160 deaths linked to the infected cases. (3/4/2020) Now
+> > there are 3,348. :( (3/6/2020)
 
 > Q3. What is the overall death rate?
 
@@ -79,9 +81,10 @@ death_rate<- round((deaths/total)*100, 2)
 death_rate
 ```
 
-    ## [1] 2.18
+    ## [1] 2.16
 
-> > The overall death rate is 2.19%.
+> > The overall death rate is 2.19%. (3/4/2020) It’s dropped\! 2.16%
+> > (3/6/2020)
 
 > Q4. What is the death rate in Mainland China?
 
@@ -95,7 +98,7 @@ chinese_total <- sum(virus[chinese_cases,]$cases)
 chinese_total
 ```
 
-    ## [1] 133207
+    ## [1] 135675
 
 ``` r
 #Next, specify that we're looking for deaths in "Mainland China".
@@ -119,7 +122,7 @@ chinese_deaths <- sum(virus[chinese_inds,]$cases)
 chinese_deaths
 ```
 
-    ## [1] 2981
+    ## [1] 3013
 
 ``` r
 #Finally, calculate death rate by dividing deaths/total in "Mainland China".
@@ -129,9 +132,10 @@ chinese_death_rate <- round((chinese_deaths/chinese_total)*100, 2)
 chinese_death_rate
 ```
 
-    ## [1] 2.24
+    ## [1] 2.22
 
-> > The death rate in Mainland China is 2.26%
+> > The death rate in Mainland China is 2.26% (3/4/2020). Now it’s 2.22%
+> > (3/6/2020).
 
 > Q5. What is the death rate in Italy, Iran, and the US?
 
@@ -147,7 +151,7 @@ italian_total <- sum(virus[italian_cases,]$cases)
 italian_total
 ```
 
-    ## [1] 3472
+    ## [1] 4420
 
 ``` r
 #Next, specify that we're looking for deaths in "Italy".
@@ -171,7 +175,7 @@ italian_deaths <- sum(virus[italian_inds,]$cases)
 italian_deaths
 ```
 
-    ## [1] 107
+    ## [1] 148
 
 ``` r
 #Finally, calculate death rate by dividing deaths/total in "Italy".
@@ -181,9 +185,10 @@ italian_death_rate <- round((italian_deaths/italian_total)*100, 2)
 italian_death_rate
 ```
 
-    ## [1] 3.08
+    ## [1] 3.35
 
-> > The death rate in Italy is 2.88%.
+> > The death rate in Italy is 2.88%.(3/4/2020) New death rate of 3.35%.
+> > (3/6/2020)
 
 Iran
 
@@ -197,7 +202,7 @@ iranian_total <- sum(virus[iranian_cases,]$cases)
 iranian_total
 ```
 
-    ## [1] 3566
+    ## [1] 4359
 
 ``` r
 #Next, specify that we're looking for deaths in "Iran".
@@ -221,7 +226,7 @@ iranian_deaths <- sum(virus[iranian_inds,]$cases)
 iranian_deaths
 ```
 
-    ## [1] 92
+    ## [1] 107
 
 ``` r
 #Finally, calculate death rate by dividing deaths/total in "Iran".
@@ -231,9 +236,10 @@ iranian_death_rate <- round((iranian_deaths/iranian_total)*100, 2)
 iranian_death_rate
 ```
 
-    ## [1] 2.58
+    ## [1] 2.45
 
-> > The death rate in Iran is 2.85%.
+> > The death rate in Iran is 2.85%. (3/4/2020) New rate, 2.45%.
+> > (3/6/2020)
 
 United States (US)
 
@@ -247,7 +253,7 @@ american_total <- sum(virus[american_cases,]$cases)
 american_total
 ```
 
-    ## [1] 172
+    ## [1] 241
 
 ``` r
 #Next, specify that we're looking for deaths in "US".
@@ -278,7 +284,7 @@ american_deaths <- sum(virus[american_inds,]$cases)
 american_deaths
 ```
 
-    ## [1] 11
+    ## [1] 12
 
 ``` r
 #Finally, calculate death rate by dividing deaths/total in "US".
@@ -288,9 +294,10 @@ american_death_rate <- round((american_deaths/american_total)*100, 2)
 american_death_rate
 ```
 
-    ## [1] 6.4
+    ## [1] 4.98
 
-> > The death rate in the US is 5.11%.
+> > The death rate in the US is 5.11%. (3/4/2020) Now only 4.98%\!
+> > (3/6/2020)
 
 # Don’t forget to wash your hands\!\!\!
 

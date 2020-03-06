@@ -1,0 +1,43 @@
+---
+title: "R Tidyverse"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Coronavirus
+
+Here we analyze infection data for the 2019 novel Coronavirus COVID-19 (2019-nCoV) epidemic. The raw data is pulled from the Johns Hopkins University Center for Systems Science and Engineering (JHU CCSE) Coronavirus repository.
+
+A CSV file is available here https://github.com/RamiKrispin/coronavirus-csv
+
+
+```{r}
+url <- "https://tinyurl.com/COVID-2019"
+virus <- read.csv(url)
+
+tail(virus)
+```
+
+## We can use R Tidyverse to calculate our statistics as well!
+
+This has become increasingly popular in the last few years, it's like a different language that's pretty compatible with other languages such as Python.
+
+```{r}
+#install.packages("tidyverse")
+library(tidyverse)
+```
+
+How many infected per country?
+
+```{r}
+cases_by_country <- virus %>%
+  group_by(Country.Region) %>%
+  summarise(tot=sum(cases)) %>%
+  arrange(desc(tot))
+
+head(cases_by_country)
+```
+
