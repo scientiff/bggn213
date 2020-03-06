@@ -1,4 +1,4 @@
-lecture\_9
+Hands on with Principal Component Analysis (PCA)
 ================
 Tiffany Luong
 2/5/2020
@@ -40,16 +40,16 @@ km
     ## 
     ## Cluster means:
     ##           x         y
-    ## 1 -2.833851  2.902190
-    ## 2  2.902190 -2.833851
+    ## 1 -2.989195  2.839118
+    ## 2  2.839118 -2.989195
     ## 
     ## Clustering vector:
     ##  [1] 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2
     ## [39] 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
     ## 
     ## Within cluster sum of squares by cluster:
-    ## [1] 74.91463 74.91463
-    ##  (between_SS / total_SS =  86.8 %)
+    ## [1] 40.50539 40.50539
+    ##  (between_SS / total_SS =  92.6 %)
     ## 
     ## Available components:
     ## 
@@ -112,8 +112,8 @@ km$centers
 ```
 
     ##           x         y
-    ## 1 -2.833851  2.902190
-    ## 2  2.902190 -2.833851
+    ## 1 -2.989195  2.839118
+    ## 2  2.839118 -2.989195
 
 Plot x colored by the kmeans cluster assignment and add cluster centers
 as blue points.
@@ -173,8 +173,8 @@ table(cutree(hc, h=3.5))
 ```
 
     ## 
-    ##  1  2  3  4  5  6 
-    ## 10 12  8 12 10  8
+    ##  1  2  3  4 
+    ## 20 10 20 10
 
 You can also ask `cutree()` for the `k` number of groups that you want.
 
@@ -182,8 +182,8 @@ You can also ask `cutree()` for the `k` number of groups that you want.
 cutree(hc, k=5)
 ```
 
-    ##  [1] 1 1 2 2 2 1 1 2 2 1 1 1 1 1 1 1 2 1 2 2 2 2 1 1 2 1 1 1 1 2 3 4 5 4 4 3 5 5
-    ## [39] 3 3 3 3 5 3 4 5 4 4 4 5 5 3 3 5 4 3 3 3 4 4
+    ##  [1] 1 1 2 1 2 2 2 1 1 1 1 1 1 1 1 2 1 1 2 1 1 2 1 2 1 2 2 1 1 1 3 3 4 5 5 3 5 4
+    ## [39] 5 4 3 5 4 3 5 4 4 3 4 4 3 4 4 5 5 5 3 5 4 4
 
 ## Data clustering.
 
@@ -233,11 +233,11 @@ grps3 <- cutree(hc, k=3)
 grps3
 ```
 
-    ##   [1] 1 2 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 1 1 1 1 1 1 1 1 1 1 1 1 1 2 1
-    ##  [38] 1 2 1 1 1 2 1 1 1 1 1 1 1 3 3 3 3 3 2 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 2 3 2
-    ##  [75] 3 3 3 3 3 3 1 3 3 3 3 3 3 3 3 3 3 3 2 3 2 3 3 2 3 3 2 2 1 1 2 2 2 2 2 2 2
-    ## [112] 2 2 2 2 2 2 2 2 2 1 2 2 2 2 2 2 2 2 2 2 2 2 2 1 2 2 2 2 2 2 2 2 2 2 2 2 2
-    ## [149] 2 2
+    ##   [1] 1 2 2 1 1 2 2 1 1 2 1 2 1 1 2 1 2 2 1 1 2 1 2 1 1 1 1 2 1 2 1 1 1 2 2 1 2
+    ##  [38] 2 2 2 2 1 1 2 1 2 2 1 1 1 3 3 3 3 3 3 3 3 3 1 3 3 3 3 3 3 3 3 3 3 3 2 3 3
+    ##  [75] 3 2 3 3 2 2 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 2 3 2 1 1 1 1 1 1 1 1 1 1 1
+    ## [112] 1 1 1 1 1 1 1 1 1 1 1 3 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+    ## [149] 1 1
 
 ``` r
 table(grps3)
@@ -245,7 +245,7 @@ table(grps3)
 
     ## grps3
     ##  1  2  3 
-    ## 50 57 43
+    ## 77 29 44
 
 Q. How does this compare to your known ‘col’ groups?
 
@@ -265,9 +265,9 @@ table(grps3, col)
 
     ##      col
     ## grps3 c1 c2 c3
-    ##     1 45  1  4
-    ##     2  5  6 46
-    ##     3  0 43  0
+    ##     1 27  1 49
+    ##     2 23  6  0
+    ##     3  0 43  1
 
 ## Principal Component Analysis (PCA)
 
