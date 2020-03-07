@@ -15,3 +15,7 @@ Here's what we did!
 - Class 16: [Pathway Analysis from RNA-Seq Results](https://github.com/scientiff/bggn213/blob/master/lecture_16/lecture_16/lecture_16.md)
 - Class 17: [Metagenomics co-occurrence networks](https://github.com/scientiff/bggn213/blob/master/lecture_17/class_17/class_17_cyto.md)
 - Class 17 Homework: [Coronavirus Analysis (Homework)](https://github.com/scientiff/bggn213/blob/master/lecture_17/class_17/class_17.md)
+
+<div class='jekyll-twitter-plugin' align="center">
+    {% twitter https://twitter.com/scientiff maxwidth=500 limit=5 %}
+</div>
